@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Text Generation with TensorFlow.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script type="module" src="./main.js"></script>
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
+    <link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
+    <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+
+<body>
+    <div class="page-wrap">
+        <div class="container"> 
+            <div class="row" style="display: inline-block; padding-top: 50px">
+                <h3 class="title" style="text-align: center">¡Genera versos de Taylor Swift!</h3>
+            </div>
+            <div class="row" style="padding-left: 40px; padding-right: 40px;">
+                <input type="text" id="seed" maxlength="40" placeholder="Palabras iniciales de su verso">
+            </div>
+            <div class="row" style="display: flex; justify-content: center; padding-top: 15px;">
+                <button id="generate-button" disabled>Cargando modelo</button>
+            </div>
+            <div class="row">
+                <blockquote>
+                    <p id="generated-sentence"></p>
+                </blockquote>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

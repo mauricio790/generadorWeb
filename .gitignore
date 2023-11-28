@@ -1,0 +1,5 @@
+venv/
+build/
+archive/
+SongLyricsGenerator-main/
+node_modules/
