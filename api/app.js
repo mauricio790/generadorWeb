@@ -11,15 +11,17 @@ var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 const options = {
-  key: fs.readFileSync("api/localhost-key.pem"),
-  cert: fs.readFileSync("api/localhost.pem"),
+  key: fs.readFileSync("localhost-key.pem"),
+  cert: fs.readFileSync("localhost.pem"),
 };
 
 //Routes
 var loginRouter = require("./routes/login");
 var generatorRouter = require("./routes/generator");
 
-
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "./html/login.html"));
+});
 app.use(express.static(path.join(__dirname, "./html")));
 
 app.use(express.json()); // para lectura de application/json
