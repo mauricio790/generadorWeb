@@ -1,36 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Text Generation with TensorFlow.js</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script type="module" src="./main.js"></script>
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
-    <link rel="stylesheet" href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css">
-    <link rel="stylesheet" href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css">
-    <link rel="stylesheet" href="./css/style.css">
-</head>
+    <link
+      rel="stylesheet"
+      href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic"
+    />
+    <link
+      rel="stylesheet"
+      href="//cdn.rawgit.com/necolas/normalize.css/master/normalize.css"
+    />
+    <link
+      rel="stylesheet"
+      href="//cdn.rawgit.com/milligram/milligram/master/dist/milligram.min.css"
+    />
+    <link rel="stylesheet" href="./css/style.css" />
+  </head>
 
-<body>
+  <body>
     <div class="page-wrap">
-        <div class="container"> 
-            <div class="row" style="display: inline-block; padding-top: 50px">
-                <h3 class="title" style="text-align: center">¡Genera versos de Taylor Swift!</h3>
-            </div>
-            <div class="row" style="padding-left: 40px; padding-right: 40px;">
-                <input type="text" id="seed" maxlength="40" placeholder="Palabras iniciales de su verso">
-            </div>
-            <div class="row" style="display: flex; justify-content: center; padding-top: 15px;">
-                <button id="generate-button" disabled>Cargando modelo</button>
-            </div>
-            <div class="row">
-                <blockquote>
-                    <p id="generated-sentence"></p>
-                </blockquote>
-            </div>
+      <div class="container">
+        <div class="row" style="display: inline-block; padding-top: 50px;">
+          <h3 class="title" style="text-align: center;">
+            ¡Genera versos de Taylor Swift!
+          </h3>
         </div>
+        <div class="row" style="padding-left: 40px; padding-right: 40px;">
+          <input
+            type="text"
+            id="seed"
+            maxlength="40"
+            placeholder="Palabras iniciales de su verso"
+          />
+        </div>
+        <div
+          class="row"
+          style="display: flex; justify-content: center; padding-top: 15px;"
+        >
+          <button id="generate-button">Generar un verso nuevo</button>
+        </div>
+        <div class="row">
+          <blockquote>
+            <p id="generated-sentence"></p>
+          </blockquote>
+        </div>
+      </div>
     </div>
-</body>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const generateButton = document.getElementById("generate-button");
+        const generatedSentence = document.getElementById("generated-sentence");
+        const seedInput = document.getElementById("seed");
+
+        generateButton.addEventListener("click", async function () {
+          const seedValue = seedInput.value; // Obtener el valor del campo de entrada
+
+          // Deshabilitar el botón mientras se realiza la solicitud
+          generateButton.disabled = true;
+
+          // Realizar la solicitud POST al servidor
+          const response = await fetch("/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ data: seedValue }),
+          });
+
+          // Manejar la respuesta del servidor
+          const data = await response.json();
+          const formattedText = data.prediction.replace(/\n/g, "<br>"); // Reemplazar saltos de línea por <br>
+          generatedSentence.innerHTML = formattedText; // Mostrar la respuesta en el párrafo
+
+          // Habilitar el botón después de 500 milisegundos (0.5 segundos)
+          setTimeout(() => {
+            generateButton.disabled = false; // Habilitar el botón nuevamente
+          }, 500);
+        });
+      });
+    </script>
+  </body>
 </html>

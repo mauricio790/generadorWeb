@@ -1,4 +1,9 @@
+
 const express = require('express');
+
+var generatorRouter = require('./routes/generator');
+
+
 const app = express();
 const path = require('path');
 const PORT = 3000;
@@ -11,3 +16,8 @@ app.use(express.json());  // para lectura de application/json
 app.listen(PORT, () => {
     console.log('Servidor corriendo en http://localhost:3000');
 });
+
+
+app.use('/',generatorRouter);
+
+module.exports = app;

@@ -1,9 +1,4 @@
-import indices_char from "./indices_char.js";
-import char_indices from "./char_indices.js";
-
-const INPUT_LENGTH = 40;
-const CHARS_TO_GENERATE = 200;
-const DIVERSITY = 0.5;
+import * as tf from 'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest';
 
 class Main {
   constructor() {
@@ -24,38 +19,73 @@ class Main {
     this.generateButton.disabled = false;
   }
 
+  async loadFile() {
+    try {
+      const response = await fetch('choruses.txt');
+      if (!response.ok) {
+        throw new Error('No se pudo cargar el archivo.');
+      }
+      const text = await response.text();
+      return text;
+    } catch (error) {
+      console.error('Error al cargar el archivo:', error);
+    }
+
+  }
+
+  async loadVocab() {
+
+    // Lee el archivo de manera sincrónica
+    const contenido = await this.loadFile();
+
+    // Encuentra los caracteres únicos en el texto
+    const vocab = Array.from(new Set(contenido.split(''))).sort(); // Separar el texto en caracteres individuales
+
+    // Crea los mapeos char2idx e idx2char
+    const char2idx = {};
+    const idx2char = [];
+
+    vocab.forEach((char, idx) => {
+      char2idx[char] = idx;
+      idx2char[idx] = char;
+    });
+
+    return {char2idx,idx2char};
+  }
+
   async generateText() {
+    const {char2idx,idx2char} = await this.loadVocab();
     let generated = this.inputSeed.value;
     this.generatedSentence.innerText = generated;
     this.generateButton.disabled = true;
     this.generateButton.innerText = "Taylor Swift dice";
-    const numGenerate = 300;
-    let inputEval = Array.from(generated, char => char_indices[char]);
+    const numGenerate = 600;
+    let inputEval = Array.from(generated, (char) => char2idx[char]);
+    console.log(inputEval);
+    console.log(idx2char);
+    console.log(char2idx);
     inputEval = tf.tensor2d([inputEval]);
-  
+
     let textGenerated = [];
-  
-    const temperature = 0.3;
-  
+
+    const temperature = 0.2;
+
     this.model.resetStates();
     for (let i = 0; i < numGenerate; i++) {
       const predictions = this.model.predict(inputEval);
-      const lastPrediction = predictions.slice([0, predictions.shape[1] - 1], [1, 1]).squeeze();
-      
+      const lastPrediction = predictions
+        .squeeze().arraySync();
+
       const scaledPredictions = tf.div(lastPrediction, temperature);
-      const softmaxed = tf.softmax(scaledPredictions);
-      
-      const logits = tf.div(softmaxed, tf.sum(softmaxed));
-  
-      const predictedId = tf.multinomial(logits, 1).dataSync()[0];
-      inputEval = tf.tensor2d([[predictedId]]);
-  
-      textGenerated.push(indices_char[predictedId]);
+
+      const predictedId = tf.multinomial(scaledPredictions, 2).dataSync()[0];
+      inputEval = tf.expandDims([predictedId],0);
+
+      textGenerated+=(idx2char[predictedId]);
     }
-    this.generatedSentence.innerText =textGenerated;
+    this.generatedSentence.innerText += textGenerated.toString();
     this.enableGeneration();
   }
-
 }
 
-window.addEventListener("load", () => new Main());
+module.exports = Main;
