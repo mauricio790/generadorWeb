@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const path = require('path'); 
 const tf = require('@tensorflow/tfjs-node');
 const fs = require('fs').promises;
 //const { Comment } = require('../models');
@@ -67,7 +68,7 @@ async function generateText(generated) {
 router
   .route("/")
   .get(async (req, res, next) => {
-     
+    res.sendFile('index.html', { root: './html' });
   })
   .post(async (req, res, next) => {
     //Asumiendo que los datos de entrada se reciben como arreglo JSON
