@@ -4,13 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script async defer src="https://buttons.github.io/buttons.js"></script>
     <title>Login con Google</title>
-    <link type="text/css" rel="stylesheet" href="./css/login.css"/>
+    <link type="text/css" rel="stylesheet" href="./css/login.css" />
   </head>
   <body>
-    <h1>Login con Google</h1>
+    <h1>Inicio de sesion</h1>
 
-    <div class="signin"
+    <div
+      class="signin"
       id="g_id_onload"
       data-client_id="783810543299-gf0drj3jc8dhn8q8uk2pi3ifta0bn6s3.apps.googleusercontent.com"
       data-context="signin"
@@ -18,7 +20,7 @@
       data-callback="handleCredentialResponse"
       data-auto_prompt="false"
     ></div>
-    
+
     <div
       class="g_id_signin"
       data-type="standard"
@@ -29,8 +31,18 @@
       data-logo_alignment="left"
     ></div>
 
+    <button class="signin-git" 
+    onclick="loginWithGitHub()" 
+    data-size="large" 
+    data-show-count="true">
+      <svg xmlns="http://www.w3.org/2000/svg" 
+      width="30" height="30" 
+      fill="currentColor" 
+      class="mr-2" viewBox="0 0 1792 1792">
+        <path d="M896 128q209 0 385.5 103t279.5 279.5 103 385.5q0 251-146.5 451.5t-378.5 277.5q-27 5-40-7t-13-30q0-3 .5-76.5t.5-134.5q0-97-52-142 57-6 102.5-18t94-39 81-66.5 53-105 20.5-150.5q0-119-79-206 37-91-8-204-28-9-81 11t-92 44l-38 24q-93-26-192-26t-192 26q-16-11-42.5-27t-83.5-38.5-85-13.5q-45 113-8 204-79 87-79 206 0 85 20.5 150t52.5 105 80.5 67 94 39 102.5 18q-39 36-49 103-21 10-45 15t-57 5-65.5-21.5-55.5-62.5q-19-32-48.5-52t-49.5-24l-20-3q-21 0-29 4.5t-5 11.5 9 14 13 12l7 5q22 10 43.5 38t31.5 51l10 23q13 38 44 61.5t67 30 69.5 7 55.5-3.5l23-4q0 38 .5 88.5t.5 54.5q0 18-13 30t-40 7q-232-77-378.5-277.5t-146.5-451.5q0-209 103-385.5t279.5-279.5 385.5-103zm-477 1103q3-7-7-12-10-3-13 2-3 7 7 12 9 6 13-2zm31 34q7-5-2-16-10-9-16-3-7 5 2 16 10 10 16 3zm30 45q9-7 0-19-8-13-17-6-9 5 0 18t17 7zm42 42q8-8-4-19-12-12-20-3-9 8 4 19 12 12 20 3zm57 25q3-11-13-16-15-4-19 7t13 15q15 6 19-6zm63 5q0-13-17-11-16 0-16 11 0 13 17 11 16 0 16-11zm58-10q-2-11-18-9-16 3-14 15t18 8 14-14z"></path>
+      </svg>Iniciar sesion con GitHub</button>
     <script>
-        function decodeJwtResponse(token) {
+      function decodeJwtResponse(token) {
         var base64Url = token.split(".")[1];
         var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
         var jsonPayload = decodeURIComponent(
@@ -55,29 +67,67 @@
         var id_token = googleUser.credential;
         console.log("ID Token: " + id_token);
 
-      try {
-          const response = await fetch('/login', {
-            method: 'POST',
+        try {
+          const response = await fetch("/login", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
             body: JSON.stringify({ token: id_token }),
           });
 
           if (response.ok) {
-            console.log('Solicitud al servidor exitosa');
-            window.location.assign('/index.html');
+            console.log("Solicitud al servidor exitosa");
+            window.location.assign("/index.html");
           } else {
-            console.error('Error al realizar la solicitud al servidor');
+            console.error("Error al realizar la solicitud al servidor");
           }
         } catch (error) {
-          console.error('Error en la solicitud:', error);
+          console.error("Error en la solicitud:", error);
         }
+      }
+
+      async function loginWithGitHub() {
+        // URL de autorización de GitHub
+        const authorizationUrl = "https://github.com/login/oauth/authorize";
+
+        // Datos de tu aplicación en GitHub
+        const clientId = "e74ed822530ee9c9fce5"; 
+        const redirectUri = "https://localhost:3000"; 
+        const scope = "user"; 
+        const clientSecret ="a34fa970f1f06f412b8a31d31d501921fb50a7c5"
+
+        const timestamp = new Date().getTime();
+        const randomData = Math.random().toString(36).substring(2);
+        const state = `${timestamp}_${randomData}`;
+
+        // Construir la URL de autorización
+        const authUrl = `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+        console.log(authUrl);
+        try {
+          const response = await fetch("/login", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token: authUrl }),
+          });
+
+          if (response.ok) {
+            console.log("Solicitud al servidor exitosa");
+            window.location.assign("/index.html");
+          } else {
+            console.error("Error al realizar la solicitud al servidor");
+          }
+        } catch (error) {
+          console.error("Error en la solicitud:", error);
+        }
+        
       }
     </script>
     <style>
       body {
-        font-family: 'Arial', sans-serif;
+        font-family: "Arial", sans-serif;
         background-color: #f4f4f4;
         margin: 100px;
         padding: 0;
@@ -93,6 +143,10 @@
 
       .signin {
         display: none;
+      }
+      .signin-git{
+
+        margin: 20px;
       }
 
       .g_id_signin {
