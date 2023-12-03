@@ -8,6 +8,7 @@ const path = require("path");
     res.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
     next();
   });
+  
 
 router
   .route("/")

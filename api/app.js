@@ -26,6 +26,16 @@ app.use(express.static(path.join(__dirname, "./html")));
 
 app.use(express.json()); // para lectura de application/json
 
+app.post("/",(req, res) => {
+    
+  const token = req.body;
+  if (token) {
+    res.cookie('myTokenCookie', token, { httpOnly: true, secure: true, sameSite: 'none' });
+    res.status(200).json({ message: 'Token almacenado con éxito' });
+  } else {
+    res.status(400).json({ error: 'Token no proporcionado' });
+  }
+})
 
 app.use("/login", loginRouter);
 app.use("/", generatorRouter);

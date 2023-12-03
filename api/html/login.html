@@ -66,9 +66,9 @@
         console.log("Email: " + profile.email);
         var id_token = googleUser.credential;
         console.log("ID Token: " + id_token);
-
+        localStorage.setItem('token', id_token);
         try {
-          const response = await fetch("/login", {
+          const response = await fetch("/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -103,9 +103,10 @@
 
         // Construir la URL de autorización
         const authUrl = `${authorizationUrl}?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`;
+        localStorage.setItem('token', authUrl);
         console.log(authUrl);
         try {
-          const response = await fetch("/login", {
+          const response = await fetch("/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
