@@ -8,7 +8,7 @@ const fs = require('fs').promises;
 async function loadFile() {
     try {
       // Read file using fs module
-      const content = await fs.readFile("api/choruses.txt", "utf-8");
+      const content = await fs.readFile("choruses.txt", "utf-8");
       return content;
     } catch (error) {
       console.error("Error loading the file:", error);
@@ -38,7 +38,7 @@ async function loadVocab() {
 
 async function generateText(generated) {
   const { char2idx, idx2char } = await loadVocab();
-  let model = await tf.loadLayersModel("file://../taylor_swift_js/model.json");
+  let model = await tf.loadLayersModel("file://./taylor_swift_js/model.json");
 
 
   const numGenerate = 600;
@@ -62,7 +62,7 @@ async function generateText(generated) {
 
     textGenerated += idx2char[predictedId];
   }
-  return textGenerated.toString();
+  return generated + "\n"+ textGenerated.toString();
 }
 
 

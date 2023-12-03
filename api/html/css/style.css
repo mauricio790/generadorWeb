@@ -1,0 +1,47 @@
+
+      body {
+        background-color: #f8f8f8;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background-color: #333;
+        color: white;
+        text-align: center;
+        padding: 10px;
+        width: 100%;
+      }
+
+      .page-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 20px;
+      }
+
+      .container {
+        display: flex;
+        justify-content: space-between;
+        max-width: 1200px;
+        width: 100%;
+      }
+
+      /* Columna de la izquierda (canciones) */
+      main {
+        padding: 20px;
+      }
+
+      /* Columna de la derecha (input y botón) */
+      .verse-generation {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        flex: 1;
+      }
+
+      ul {
+        list-style-type: none;
+        padding: 0;
+      }

@@ -40,7 +40,7 @@
 
         <!-- Columna de la derecha (input y botón) -->
         <div class="verse-generation">
-          <div class="row" style="padding-left: 40px; padding-right: 40px">
+          <div class="row" style="padding-left: 40px; padding-right: 40px;">
             <input
               type="text"
               id="seed"
@@ -50,7 +50,7 @@
           </div>
           <div
             class="row"
-            style="display: flex; justify-content: center; padding-top: 15px"
+            style="display: flex; justify-content: center; padding-top: 15px;"
           >
             <button id="generate-button">Generar un verso nuevo</button>
           </div>
@@ -70,13 +70,24 @@
         const generateButton = document.getElementById("generate-button");
         const generatedSentence = document.getElementById("generated-sentence");
         const seedInput = document.getElementById("seed");
+        const songList = document.querySelector("ul");
 
-        // Recupera el token del almacenamiento local
-        const storedToken = localStorage.getItem("token");
-         // Usa el token según sea necesario (puedes adaptarlo según tus necesidades)
-         if (storedToken) {
-          console.log("Token almacenado:", storedToken);
+        // Recupera versos almacenados del localStorage
+        const storedVerses = JSON.parse(localStorage.getItem("verses")) || [];
+
+        function updateVerseList() {
+          songList.innerHTML = "";
+          storedVerses.forEach((verse, index) => {
+            const firstLine = verse.split("<br>")[0]; // Obtener la primera línea del verso
+            const listItem = document.createElement("li");
+            listItem.textContent =
+              firstLine !== undefined ? firstLine : `Verso ${index + 1}`;
+            songList.appendChild(listItem);
+          });
         }
+
+        // Actualiza la lista de versos al cargar la página
+        updateVerseList();
 
         generateButton.addEventListener("click", async function () {
           const seedValue = seedInput.value; // Obtener el valor del campo de entrada
@@ -84,8 +95,7 @@
           // Deshabilitar el botón mientras se realiza la solicitud
           generateButton.disabled = true;
 
-          // Realizar la solicitud POST al servidor
-          const response = await fetch("/", {
+          const response = await fetch("/generador", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -95,63 +105,45 @@
 
           // Manejar la respuesta del servidor
           const data = await response.json();
-          const formattedText = data.prediction.replace(/\n/g, "<br>");
-          generatedSentence.innerHTML = formattedText;
 
+          if (data.prediction !== undefined) {
+            const formattedText = data.prediction.replace(/\n/g, "<br>");
+            generatedSentence.innerHTML = formattedText;
+
+            // Guardar el verso generado en localStorage
+            storedVerses.push(formattedText);
+            localStorage.setItem("verses", JSON.stringify(storedVerses));
+
+            // Actualizar la lista de versos en la página
+            updateVerseList();
+          } else {
+            // Manejar el caso en el que 'prediction' es undefined
+            console.error(
+              "Alguna propiedad no está definida en la respuesta del servidor"
+            );
+          }
           // Habilitar el botón después de 500 milisegundos (0.5 segundos)
           setTimeout(() => {
             generateButton.disabled = false; // Habilitar el botón nuevamente
           }, 500);
         });
+
+        // Función para actualizar el contenido al seleccionar una canción
+        function selectSong(index) {
+          const selectedVerse = storedVerses[index];
+          generatedSentence.innerHTML = selectedVerse;
+          // Actualizar el valor de seedInput al seleccionar la canción
+          seedInput.value = storedVerses[index].split("<br>")[0]; // Suponiendo que el nombre de la canción está al inicio del verso
+        }
+
+        // Evento de escucha para los elementos de la lista de canciones
+        songList.addEventListener("click", function (event) {
+          if (event.target && event.target.nodeName === "LI") {
+            const index = Array.from(songList.children).indexOf(event.target);
+            selectSong(index);
+          }
+        });
       });
     </script>
-    <style>
-      body {
-        background-color: #f8f8f8;
-        display: flex;
-        flex-direction: column;
-      }
-
-      header {
-        background-color: #333;
-        color: white;
-        text-align: center;
-        padding: 10px;
-        width: 100%;
-      }
-
-      .page-wrap {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        padding: 20px;
-      }
-
-      .container {
-        display: flex;
-        justify-content: space-between;
-        max-width: 1200px;
-        width: 100%;
-      }
-
-      /* Columna de la izquierda (canciones) */
-      main {
-        padding: 20px;
-      }
-
-      /* Columna de la derecha (input y botón) */
-      .verse-generation {
-        display: flex;
-        flex-direction: column;
-        padding: 20px;
-        flex: 1;
-      }
-
-      ul {
-        list-style-type: none;
-        padding: 0;
-      }
-    </style>
   </body>
 </html>
