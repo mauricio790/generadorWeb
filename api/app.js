@@ -42,6 +42,7 @@ app.post("/", (req, res) => {
   }
 });
 
+
 app.use("/", loginRouter);
 
 // Redireccionamiento al router de generador después de la redirección

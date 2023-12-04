@@ -65,7 +65,6 @@ async function generateText(generated) {
   return generated + "\n"+ textGenerated.toString();
 }
 
-
 router
   .route("/")
   .get(async (req, res, next) => {
