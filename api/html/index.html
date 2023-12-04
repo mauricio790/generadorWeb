@@ -88,21 +88,8 @@
         }
 
         logoutButton.addEventListener("click", async function () {
-          // Aquí puedes agregar la lógica para cerrar sesión, por ejemplo, limpiar el localStorage
           localStorage.removeItem("verses");
-          // También podrías redirigir al usuario a la página de inicio de sesión, si es necesario
-          try {
-          const response = await fetch("/login", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ }),
-          })
           window.location.assign("/login.html");
-        } catch (error) {
-          console.error("Error en la solicitud:", error);
-        }
       });
       
 
